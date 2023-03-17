@@ -14,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //초기값
   List<String> contents = [];
+  List<String> wonraecontents = [];
   List<String> removedcontents = [];
   String displaytextupper = '문제가 들어있는 박스입니다.';
   String displaytextlower = 'This box contains the answer.';
@@ -25,6 +26,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Color color2 = const Color.fromARGB(109, 145, 206, 139);
   Color myfontcolor = Colors.black45;
   Icon modicon = const Icon(Icons.dark_mode_rounded, color: Colors.black45);
+  bool waitingtime = false;
+  int countnumber = 0;
+  String textmixingrefer = '문제섞기';
 
   //파일 선택 누를시에
   Future<void> pickFile() async {
@@ -37,11 +41,10 @@ class _HomeScreenState extends State<HomeScreen> {
       // Use the file.
       File file = File(filePath);
       contents = await file.readAsLines();
-
-      nextPressed();
-
+      wonraecontents = contents;
+      previousPressed();
       setState(() {
-        headline = '남은문제 ${contents.length}';
+        headline = '남은문제 ${countnumber + 1} / ${contents.length}';
       });
     }
   }
@@ -49,18 +52,55 @@ class _HomeScreenState extends State<HomeScreen> {
   //다음문제누를시에
   void nextPressed() {
     if (contents.isNotEmpty) {
-      var randomItem = (contents..shuffle()).first;
-      List<String> randomItemList = (randomItem.split('\t'));
-      engText = randomItemList.first;
-      korText = randomItemList.last;
-      contents.remove(randomItem);
-      //removedcontents.add(randomItem);
+      if (countnumber <= 0) {
+        countnumber = 0;
+        countnumber = countnumber + 1;
+      } else {
+        if (countnumber < contents.length - 1) {
+          countnumber = countnumber + 1;
+        }
+      }
+      var item = contents[countnumber];
+      List<String> itemList = (item.split('\t'));
+      engText = itemList.first;
+      korText = itemList.last;
       setState(() {
         displaytextupper = korText;
         displaytextlower = '';
-        headline = '남은문제 ${contents.length}';
+        headline = '남은문제 ${countnumber + 1} / ${contents.length}';
       });
     }
+  }
+
+  void previousPressed() {
+    if (contents.isNotEmpty) {
+      if (countnumber <= 0) {
+        countnumber = 0;
+      } else {
+        countnumber = countnumber - 1;
+      }
+
+      var item = contents[countnumber];
+      List<String> itemList = (item.split('\t'));
+      engText = itemList.first;
+      korText = itemList.last;
+      setState(() {
+        displaytextupper = korText;
+        displaytextlower = '';
+        headline = '남은문제 ${countnumber + 1} / ${contents.length}';
+      });
+    }
+  }
+
+  void mixtheproblem() {
+    setState(() {
+      contents.shuffle();
+      int i = 0;
+      while (i < contents.length) {
+        previousPressed();
+        i = i + 1;
+      }
+    });
   }
 
   //위의 텍스트 상자를 누를시에
@@ -83,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void voiceclicked() async {
     FlutterTts flutterTts = FlutterTts();
     await flutterTts.stop();
-    await flutterTts.setLanguage("en-AU");
+    await flutterTts.setLanguage("en-US");
     await flutterTts.setEngine("com.google.android.tts");
     await flutterTts.speak(engText);
   }
@@ -147,10 +187,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Flexible(
+                      fit: FlexFit.tight,
+                      flex: 5,
+                      child: SizedBox(
+                        height: double.infinity,
+                        width: double.infinity,
+                        child: IconButton(
+                          onPressed: voiceclicked,
+                          icon: const Icon(Icons.volume_up_rounded),
+                        ),
+                      ),
+                    ),
+                    everybutton('이전문제', previousPressed),
                     everybutton('다음문제', nextPressed),
-                    IconButton(
-                      onPressed: voiceclicked,
-                      icon: const Icon(Icons.volume_up_rounded),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      flex: 5,
+                      child: SizedBox(
+                        height: double.infinity,
+                        width: double.infinity,
+                        child: IconButton(
+                          onPressed: voiceclicked,
+                          icon: const Icon(Icons.volume_up_rounded),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -167,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: myfontcolor,
                   ),
                 ),
+                textButtons2(textmixingrefer, mixtheproblem),
                 IconButton(iconSize: 20, onPressed: changemod, icon: modicon),
               ],
             ),
@@ -191,10 +253,22 @@ class _HomeScreenState extends State<HomeScreen> {
           child: AutoSizeText(
             textbuttonspressedon,
             style: TextStyle(
-                fontSize: 100, color: myfontcolor, fontWeight: FontWeight.w600),
-            maxLines: 2,
+                fontSize: 50, color: myfontcolor, fontWeight: FontWeight.w600),
+            maxLines: 111,
           ),
         ),
+      ),
+    );
+  }
+
+  TextButton textButtons2(textbuttonspressedon, whenPressed) {
+    return TextButton(
+      onPressed: whenPressed,
+      child: AutoSizeText(
+        textbuttonspressedon,
+        style: TextStyle(
+            fontSize: 22, color: myfontcolor, fontWeight: FontWeight.w600),
+        maxLines: 111,
       ),
     );
   }
@@ -202,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Flexible everybutton(String text, ifpress) {
     return Flexible(
       fit: FlexFit.tight,
-      flex: 1,
+      flex: 20,
       child: SizedBox(
         width: double.infinity,
         height: double.infinity,
