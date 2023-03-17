@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Icon modicon = const Icon(Icons.dark_mode_rounded, color: Colors.black45);
   bool waitingtime = false;
   int countnumber = 0;
-  String textmixingrefer = '문제섞기';
+  int keFs = 15;
 
   //파일 선택 누를시에
   Future<void> pickFile() async {
@@ -149,18 +149,32 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  //폰트사이즈 올리기 내리기
+  void fsup() {
+    setState(() {
+      keFs = keFs + 5;
+    });
+  }
+
+  void fsdown() {
+    setState(() {
+      keFs = keFs - 5;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: color1,
       appBar: AppBar(
+        toolbarHeight: 25,
         centerTitle: true,
         backgroundColor: color2,
         elevation: 0.2,
         title: AutoSizeText(
           headline,
           style: TextStyle(
-            fontSize: 30,
+            fontSize: 15,
             color: myfontcolor,
             fontWeight: FontWeight.w500,
           ),
@@ -180,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
               fit: FlexFit.tight,
               flex: 10,
               child: Container(
-                margin: const EdgeInsets.all(10),
+                margin: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: const Color.fromARGB(64, 59, 112, 83)),
@@ -228,7 +242,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: myfontcolor,
                   ),
                 ),
-                textButtons2(textmixingrefer, mixtheproblem),
+                textButtons2("폰트-", fsdown),
+                textButtons2("문제섞기", mixtheproblem),
+                textButtons2("폰트+", fsup),
                 IconButton(iconSize: 20, onPressed: changemod, icon: modicon),
               ],
             ),
@@ -244,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
       flex: 10,
       child: Container(
         width: double.infinity,
-        margin: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(5),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: const Color.fromARGB(64, 59, 112, 83)),
@@ -253,7 +269,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: AutoSizeText(
             textbuttonspressedon,
             style: TextStyle(
-                fontSize: 50, color: myfontcolor, fontWeight: FontWeight.w600),
+                fontSize: keFs + 0,
+                color: myfontcolor,
+                fontWeight: FontWeight.w600),
             maxLines: 111,
           ),
         ),
@@ -267,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: AutoSizeText(
         textbuttonspressedon,
         style: TextStyle(
-            fontSize: 22, color: myfontcolor, fontWeight: FontWeight.w600),
+            fontSize: 15, color: myfontcolor, fontWeight: FontWeight.w600),
         maxLines: 111,
       ),
     );
@@ -276,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Flexible everybutton(String text, ifpress) {
     return Flexible(
       fit: FlexFit.tight,
-      flex: 20,
+      flex: 10,
       child: SizedBox(
         width: double.infinity,
         height: double.infinity,
@@ -285,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: AutoSizeText(
             text,
             style: TextStyle(
-              fontSize: 30,
+              fontSize: 22,
               color: myfontcolor,
               fontWeight: FontWeight.w600,
             ),
